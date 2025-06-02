@@ -64,19 +64,14 @@ void crc_encoder(char* input) {
 // CRC 디코더
 void crc_decoder(const char* received_input_str) { // char*를 인자로 받도록 수정
     printf("\n=== CRC-8 Decoder ===\n");
-    // char input[25]; // 내부 input 배열 제거
-    // printf("Enter 24-bit codeword (binary): "); // 내부 scanf 관련 문구 제거
-    // scanf("%24s", input); // 내부 scanf 제거
 
     // 24비트 전체를 codeword에 저장
     unsigned int codeword = 0;
-    for (int i = 0; i < 24; i++) { // received_input_str 사용 (길이가 24라고 가정)
+    for (int i = 0; i < 24; i++) { // received_input_str 사용
         codeword = (codeword << 1) + (received_input_str[i] - '0');
     }
 
-    // 수정된 CRC 검증 로직 시작
     unsigned char crc_check_value = 0;
-    // GENERATOR_POLY는 0x107로 정의되어 있어야 합니다.
 
     for (int i = 23; i >= 0; i--) { // 코드워드의 24비트에 대해 반복 (MSB부터)
         unsigned char current_bit = (codeword >> i) & 0x01; // 현재 비트 추출
@@ -103,7 +98,7 @@ void crc_decoder(const char* received_input_str) { // char*를 인자로 받도�
 }
 
 int main() {
-    int choice;
+
     char input[25]; // 24비트 입력 + 종료 문자를 위해 25로 설정
     while (1) {
         printf("\n=== CRC-8 Encoder/Decoder ===\n");
@@ -128,7 +123,11 @@ int main() {
             printf("오류: 이진수(0과 1)만 입력하세요!\n");
             continue;
         }
-        
+        // 입력 길이가 16비트 또는 24비트인지 확인
+        if (strlen(input) != 16 && strlen(input) != 24) {
+            printf("오류: 16비트 또는 24비트 이진수만 입력하세요!\n");
+            continue;
+        }
         //입력 길이 16bit면 crc_encoder 호출
         if (strlen(input) == 16) {
             crc_encoder(input);
@@ -136,8 +135,7 @@ int main() {
         
         //입력 길이 24bit면 crc_decoder 호출
         else if (strlen(input) == 24) {
-            // crc_decoder 함수 호출 시 main에서 읽은 input을 전달합니다.
-            // crc_decoder 함수 내부에서 "=== CRC-8 Decoder ==="를 출력하므로 main에서는 제거합니다.
+
             crc_decoder(input); 
         }
         else {
